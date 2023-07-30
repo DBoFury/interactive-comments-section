@@ -2,21 +2,19 @@
 
 import { FC, useState } from "react";
 import { ScoreType } from "@/types";
-import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 import { Button } from "./ui/button";
 import type { Session } from "next-auth";
 import { cn, findScore } from "@/lib/utils";
+import { Icons } from "./Icons";
 
 interface ScoreProps {
   commentId: string;
   score: ScoreType[];
-  session: Session | null;
+  sessionUser: Session["user"] | null;
 }
 
-const Score: FC<ScoreProps> = ({ commentId, score, session }) => {
-  const [user, setUser] = useState<Session["user"] | null>(
-    session?.user || null
-  );
+const Score: FC<ScoreProps> = ({ commentId, score, sessionUser }) => {
+  const [user, setUser] = useState<Session["user"] | null>(sessionUser || null);
   const [scoredByUser, setScoredByUser] = useState<boolean | null>(
     findScore(user, score)
   );
@@ -71,12 +69,11 @@ const Score: FC<ScoreProps> = ({ commentId, score, session }) => {
         <Button
           onClick={() => handleScoreButton(true)}
           variant="ghost"
-          className={cn("text-grayish-blue focus:outline-none", {
+          className={cn("group text-grayish-blue focus:outline-none", {
             "bg-moderate-blue": scoredByUser,
           })}>
-          <AiOutlinePlus
-            size={16}
-            className={cn("", {
+          <Icons.plus
+            className={cn("fill-grayish-blue group-hover:fill-moderate-blue", {
               "fill-white": scoredByUser,
             })}
           />
@@ -90,9 +87,8 @@ const Score: FC<ScoreProps> = ({ commentId, score, session }) => {
           className={cn("text-grayish-blue focus:outline-none", {
             "bg-moderate-blue": scoredByUser !== null && !scoredByUser,
           })}>
-          <AiOutlineMinus
-            size={16}
-            className={cn("", {
+          <Icons.minus
+            className={cn("fill-grayish-blue group-hover:fill-moderate-blue", {
               "fill-white": scoredByUser !== null && !scoredByUser,
             })}
           />

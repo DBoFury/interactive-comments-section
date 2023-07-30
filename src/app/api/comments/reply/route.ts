@@ -1,10 +1,11 @@
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
-import prisma from "../../../../prisma/client";
+import prisma from "../../../../../prisma/client";
 import { ZodError, z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 
-const createReqSchema = z.object({
+const createReplySchema = z.object({
+  commentId: z.string(),
   content: z.string().min(10).max(300),
 });
 
@@ -14,7 +15,7 @@ export const POST = async (req: NextRequest) => {
       (session) => session?.user
     );
 
-    const { content } = createReqSchema.parse(await req.json());
+    const { commentId, content } = createReplySchema.parse(await req.json());
 
     if (!user) {
       return NextResponse.json(
@@ -31,17 +32,15 @@ export const POST = async (req: NextRequest) => {
       },
     });
 
-    const createdComment = await prisma.comment.create({
+    const comment = await prisma.comment.create({
       data: {
-        content: content,
         authorId: userDB?.id!,
+        content: content,
+        replyingToId: commentId,
       },
     });
 
-    return NextResponse.json(
-      { id: createdComment.id, message: "Created." },
-      { status: 201 }
-    );
+    return NextResponse.json({ message: "Reply submitted." }, { status: 201 });
   } catch (error) {
     if (error instanceof ZodError) {
       return NextResponse.json({ message: error.message }, { status: 400 });

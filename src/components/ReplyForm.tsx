@@ -1,12 +1,6 @@
-"use client";
-
 import { FC, useState } from "react";
-import { Session } from "next-auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-
-import { Button } from "@/components/ui/button";
+import type { Session } from "next-auth";
+import { cn, getFallback } from "@/lib/utils";
 import {
   Form,
   FormControl,
@@ -15,57 +9,54 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "./ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/ui/use-toast";
-import { cn, getFallback } from "@/lib/utils";
+import { useForm } from "react-hook-form";
 
-const CommentSchema = z.object({
+const ReplySchema = z.object({
   text: z
     .string()
     .min(10, {
-      message: "Your comment should contain at least 10 symbols",
+      message: "Your reply should contain at least 10 symbols",
     })
     .max(300, {
-      message: "Comment is too long, try to contain the 300 symbols width",
+      message: "Reply is too long, try to contain the 300 symbols width",
     }),
 });
 
-interface InputFormProps {
-  session: Session | null;
+interface ReplyFormProps {
+  commentId: string;
+  user: Session["user"] | null;
+  setOpenedReply: (value: null) => void;
 }
 
-const InputForm: FC<InputFormProps> = ({ session }) => {
+const ReplyForm: FC<ReplyFormProps> = ({ commentId, user, setOpenedReply }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const form = useForm<z.infer<typeof CommentSchema>>({
-    resolver: zodResolver(CommentSchema),
+  const form = useForm<z.infer<typeof ReplySchema>>({
+    resolver: zodResolver(ReplySchema),
     defaultValues: {
       text: "",
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof CommentSchema>) => {
+  const onSubmit = async (data: z.infer<typeof ReplySchema>) => {
     form.reset();
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/comments", {
+      const response = await fetch("/api/comments/reply", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ content: data.text }),
+        body: JSON.stringify({ commentId, content: data.text }),
       });
 
-      toast({
-        description: (
-          <p className="font-rubik">
-            Your comment has been submitted{" "}
-            <span className="absolute bottom-[27px] pl-1">👍</span>
-          </p>
-        ),
-        duration: 2000,
-      });
+      setOpenedReply(null);
     } catch (error) {
       toast({
         variant: "destructive",
@@ -90,8 +81,8 @@ const InputForm: FC<InputFormProps> = ({ session }) => {
               <FormItem>
                 <FormControl>
                   <Textarea
-                    disabled={!!!session || isLoading}
-                    placeholder="Add a comment..."
+                    disabled={isLoading}
+                    placeholder="Your reply..."
                     className="resize-none"
                     {...field}
                   />
@@ -101,27 +92,19 @@ const InputForm: FC<InputFormProps> = ({ session }) => {
             )}
           />
           <div className="flex items-center justify-between pl-1">
-            {!!session ? (
-              <Avatar>
-                <AvatarImage
-                  src={session.user.image ?? ""}
-                  alt={`@${session.user.username}`}
-                />
-                <AvatarFallback>{getFallback(session.user)}</AvatarFallback>
-              </Avatar>
-            ) : (
-              <></>
-            )}
+            <Avatar>
+              <AvatarImage src={user?.image ?? ""} alt={`@${user?.username}`} />
+              <AvatarFallback>{getFallback(user!)}</AvatarFallback>
+            </Avatar>
             <Button
-              disabled={!!!session || isLoading}
-              type="submit"
+              disabled={isLoading}
               className={cn(
                 "px-6 py-3 ml-auto uppercase bg-moderate-blue hover:bg-light-grayish-blue",
                 {
                   "pl-4 pr-2": isLoading,
                 }
               )}>
-              Send
+              Reply
               {isLoading && (
                 <span
                   className="ml-2 h-5 w-5 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
@@ -136,4 +119,4 @@ const InputForm: FC<InputFormProps> = ({ session }) => {
   );
 };
 
-export default InputForm;
+export default ReplyForm;
