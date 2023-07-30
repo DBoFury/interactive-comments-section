@@ -13,6 +13,7 @@ import SignUp from "@/components/auth/SignUp";
 import { useState } from "react";
 import SignIn from "@/components/auth/SignIn";
 import OAuth from "./auth/OAuth";
+import { Button } from "./ui/button";
 
 const NavMenu = () => {
   const [isLoading, setIsLoading] = useState<"credentials" | "google" | false>(
@@ -27,7 +28,9 @@ const NavMenu = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <FiMenu size={30} />
+        <Button aria-controls="" className="p-2 h-fit" variant="ghost">
+          <FiMenu size={30} />
+        </Button>
       </SheetTrigger>
       <SheetContent className="font-rubik">
         <SheetHeader>

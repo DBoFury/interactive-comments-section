@@ -84,6 +84,9 @@ export const POST = async (req: NextRequest) => {
     if (error instanceof ZodError) {
       return NextResponse.json({ message: error.message }, { status: 400 });
     }
+    if (error instanceof Error) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
+    }
     return NextResponse.json(
       { message: "Something went wrong. Try again later." },
       { status: 400 }

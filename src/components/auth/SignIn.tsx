@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC } from "react";
 import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,7 +16,6 @@ import {
 import { PasswordInput } from "@/components/auth/PasswordInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { hash } from "bcryptjs";
 import { cn } from "@/lib/utils";
 
 export const SignUpSchema = z.object({
@@ -59,14 +58,12 @@ const SignIn: FC<SignInProps> = ({
     setIsLoading("credentials");
     form.reset();
     try {
-      const { email, password: rawPassword } = data;
-
-      const password = await hash(rawPassword, 12);
+      const { email, password } = data;
 
       await signIn("credentials", { email, password });
-
-      setIsLoading(false);
     } catch (error: any) {
+      // TODO: handle errors
+    } finally {
       setIsLoading(false);
     }
   };

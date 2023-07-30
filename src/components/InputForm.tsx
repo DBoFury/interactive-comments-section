@@ -90,6 +90,8 @@ const InputForm: FC<InputFormProps> = ({ session }) => {
               <FormItem>
                 <FormControl>
                   <Textarea
+                    id="comment"
+                    aria-describedby=""
                     disabled={!!!session || isLoading}
                     placeholder="Add a comment..."
                     className="resize-none"

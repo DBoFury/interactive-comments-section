@@ -14,7 +14,7 @@ interface ScoreProps {
 }
 
 const Score: FC<ScoreProps> = ({ commentId, score, sessionUser }) => {
-  const [user, setUser] = useState<Session["user"] | null>(sessionUser || null);
+  const [user, _] = useState<Session["user"] | null>(sessionUser || null);
   const [scoredByUser, setScoredByUser] = useState<boolean | null>(
     findScore(user, score)
   );
@@ -52,8 +52,6 @@ const Score: FC<ScoreProps> = ({ commentId, score, sessionUser }) => {
         body: JSON.stringify({ commentId, liked }),
       });
     } catch (error) {
-      console.error("Error while processing the request:", error);
-
       if (scoredByUser !== null) {
         setScoredByUser(!liked);
         setTotalScore((prev) => (scoredByUser ? prev + 1 : prev - 1));
@@ -67,6 +65,7 @@ const Score: FC<ScoreProps> = ({ commentId, score, sessionUser }) => {
     <div className="rounded-lg bg-light-gray">
       <div className="flex items-center justify-center space-x-1">
         <Button
+          disabled={!!!user}
           onClick={() => handleScoreButton(true)}
           variant="ghost"
           className={cn("group text-grayish-blue focus:outline-none", {
@@ -82,6 +81,7 @@ const Score: FC<ScoreProps> = ({ commentId, score, sessionUser }) => {
           {totalScore}
         </span>
         <Button
+          disabled={!!!user}
           onClick={() => handleScoreButton(false)}
           variant="ghost"
           className={cn("text-grayish-blue focus:outline-none", {

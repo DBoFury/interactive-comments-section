@@ -81,6 +81,8 @@ const ReplyForm: FC<ReplyFormProps> = ({ commentId, user, setOpenedReply }) => {
               <FormItem>
                 <FormControl>
                   <Textarea
+                    id="comment-reply"
+                    aria-describedby=""
                     disabled={isLoading}
                     placeholder="Your reply..."
                     className="resize-none"

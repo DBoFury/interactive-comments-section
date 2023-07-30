@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, ReactNode, useState } from "react";
+import { FC, Fragment, ReactNode, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { CommentType } from "@/types";
 import type { Session } from "next-auth";
@@ -18,7 +18,7 @@ const getCommentsElements = (
   return comments.map((comment) => {
     if (comment.replies && comment.replies.length > 0) {
       return (
-        <>
+        <Fragment key={`comments-${comment.id}`}>
           <Comment
             key={comment.id}
             session={session}
@@ -36,7 +36,7 @@ const getCommentsElements = (
               (repliesTo = comment.author.username)
             )}
           </Comments>
-        </>
+        </Fragment>
       );
     } else {
       return (
@@ -64,9 +64,7 @@ const CommentsSection: FC<CommentSectionProps> = ({ comments, session }) => {
   return (
     <ScrollArea className="flex-grow h-0">
       <div className="flex flex-col space-y-4">
-        <Comments depth={0}>
-          {getCommentsElements(session, comments, openedReply, setOpenedReply)}
-        </Comments>
+        {getCommentsElements(session, comments, openedReply, setOpenedReply)}
       </div>
     </ScrollArea>
   );

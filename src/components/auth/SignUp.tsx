@@ -17,6 +17,7 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { toast } from "../ui/use-toast";
 
 export const SignUpSchema = z.object({
   email: z
@@ -68,22 +69,30 @@ const SignUp: FC<SignUpProps> = ({
         },
       });
 
-      setIsLoading(false);
-
       if (!response.ok) {
-        form.setError("email", {
-          type: "Exists",
-          message: "Such user already exists",
-        });
-        return;
+        const { message } = await response.json();
+        const status = response.status;
+        if (status === 409) {
+          form.setError("email", {
+            type: "Exists",
+            message: message,
+          });
+          return;
+        } else {
+          throw new Error("Something went wrong. Try again later.");
+        }
       }
 
       const { email, password } = await response.json();
 
-      console.log(email, password);
-
       await signIn("credentials", { email, password });
     } catch (error: any) {
+      toast({
+        variant: "destructive",
+        description: <p className="font-rubik">{error.message}</p>,
+        duration: 2000,
+      });
+    } finally {
       setIsLoading(false);
     }
   };
@@ -107,7 +116,7 @@ const SignUp: FC<SignUpProps> = ({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="pl-1" />
               </FormItem>
             )}
           />
@@ -125,7 +134,7 @@ const SignUp: FC<SignUpProps> = ({
                     {...field}
                   />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="pl-1" />
               </FormItem>
             )}
           />
@@ -137,7 +146,7 @@ const SignUp: FC<SignUpProps> = ({
                 <FormControl>
                   <PasswordInput disabled={!!isLoading} {...field} />
                 </FormControl>
-                <FormMessage />
+                <FormMessage className="pl-1" />
               </FormItem>
             )}
           />

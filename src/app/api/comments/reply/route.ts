@@ -32,6 +32,14 @@ export const POST = async (req: NextRequest) => {
       },
     });
 
+    const replyingToComment = await prisma.comment.findFirst({
+      where: { id: commentId },
+    });
+
+    if (replyingToComment?.authorId === userDB?.id) {
+      throw new Error("Cannot reply to your own comment!");
+    }
+
     const comment = await prisma.comment.create({
       data: {
         authorId: userDB?.id!,
@@ -43,6 +51,9 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json({ message: "Reply submitted." }, { status: 201 });
   } catch (error) {
     if (error instanceof ZodError) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
+    }
+    if (error instanceof Error) {
       return NextResponse.json({ message: error.message }, { status: 400 });
     }
     return NextResponse.json(

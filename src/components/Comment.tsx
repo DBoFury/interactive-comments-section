@@ -1,7 +1,4 @@
-"use client";
-
-import Image from "next/image";
-import { FC, useState } from "react";
+import { FC } from "react";
 import Score from "./Score";
 import { getFormattedDate } from "@/helpers/date";
 import { CommentType } from "@/types";
@@ -71,8 +68,11 @@ const Comment: FC<CommentProps> = ({
                     Close
                   </span>
                 </Button>
+              ) : session?.user.email === author.email ? (
+                <></>
               ) : (
                 <Button
+                  disabled={!!!session}
                   onClick={() => setOpenedReply(comment.id)}
                   variant="ghost"
                   className="flex items-center justify-center space-x-1 group text-moderate-blue hover:bg-transparent">
