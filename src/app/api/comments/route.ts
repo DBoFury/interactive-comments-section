@@ -35,8 +35,6 @@ export const POST = async (req: NextRequest) => {
     },
   });
 
-  console.log(createdComment);
-
   return NextResponse.json(
     { id: createdComment.id, message: "Created." },
     { status: 201 }

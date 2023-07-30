@@ -5,13 +5,16 @@ import ReplyIcon from "./ui/ReplyIcon";
 import { getFormattedDate } from "@/helpers/date";
 import { CommentType } from "@/types";
 import { Button } from "./ui/button";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 interface CommentProps {
   comment: CommentType;
   repliesTo: string | null;
 }
 
-const Comment: FC<CommentProps> = ({ comment, repliesTo }) => {
+const Comment: FC<CommentProps> = async ({ comment, repliesTo }) => {
+  const session = await getServerSession(authOptions);
   const { author: user } = comment;
 
   return (
@@ -38,7 +41,11 @@ const Comment: FC<CommentProps> = ({ comment, repliesTo }) => {
             {comment.content}
           </p>
           <div className="flex items-center justify-between">
-            <Score score={comment.score} />
+            <Score
+              session={session}
+              commentId={comment.id}
+              score={comment.score}
+            />
             <Button
               variant="ghost"
               className="flex items-center justify-center space-x-1 text-moderate-blue">
