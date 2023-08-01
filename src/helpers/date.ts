@@ -3,7 +3,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
 
-export const getFormattedDate = async (date: Date) => {
+export const getFormattedDate = (date: Date) => {
   const formattedDate = `${dayjs(date).fromNow(true)} ago`;
 
   return formattedDate;

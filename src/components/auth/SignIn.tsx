@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState } from "react";
+import { FC } from "react";
 import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,8 +16,8 @@ import {
 import { PasswordInput } from "@/components/auth/PasswordInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { hash } from "bcryptjs";
 import { cn } from "@/lib/utils";
+import { toast } from "../ui/use-toast";
 
 export const SignUpSchema = z.object({
   email: z
@@ -59,14 +59,24 @@ const SignIn: FC<SignInProps> = ({
     setIsLoading("credentials");
     form.reset();
     try {
-      const { email, password: rawPassword } = data;
+      const { email, password } = data;
 
-      const password = await hash(rawPassword, 12);
+      const status = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-      await signIn("credentials", { email, password });
-
-      setIsLoading(false);
+      if (status?.error) {
+        throw new Error("Invalid password or email.");
+      }
     } catch (error: any) {
+      toast({
+        variant: "destructive",
+        description: <p className="font-rubik">{error.message}</p>,
+        duration: 4000,
+      });
+    } finally {
       setIsLoading(false);
     }
   };

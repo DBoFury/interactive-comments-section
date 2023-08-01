@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Session } from "next-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,7 +17,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { getFallback } from "@/lib/utils";
+import { cn, getFallback } from "@/lib/utils";
 
 const CommentSchema = z.object({
   text: z
@@ -35,6 +35,8 @@ interface InputFormProps {
 }
 
 const InputForm: FC<InputFormProps> = ({ session }) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const form = useForm<z.infer<typeof CommentSchema>>({
     resolver: zodResolver(CommentSchema),
     defaultValues: {
@@ -44,27 +46,37 @@ const InputForm: FC<InputFormProps> = ({ session }) => {
 
   const onSubmit = async (data: z.infer<typeof CommentSchema>) => {
     form.reset();
+    setIsLoading(true);
 
-    const response = await fetch("/api/comments", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content: data.text }),
-    });
+    try {
+      const response = await fetch("/api/comments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: data.text }),
+      });
 
-    const result = await response.json();
-
-    toast({
-      description: (
-        <p className="font-rubik">
-          {result}
-          {/* Your comment has been submitted{" "}
-          <span className="absolute bottom-[27px] pl-1">👍</span> */}
-        </p>
-      ),
-      duration: 2000,
-    });
+      toast({
+        description: (
+          <p className="font-rubik">
+            Your comment has been submitted{" "}
+            <span className="absolute bottom-[27px] pl-1">👍</span>
+          </p>
+        ),
+        duration: 2000,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        description: (
+          <p className="font-rubik">Something went wrong. Try again later.</p>
+        ),
+        duration: 2000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -78,7 +90,9 @@ const InputForm: FC<InputFormProps> = ({ session }) => {
               <FormItem>
                 <FormControl>
                   <Textarea
-                    disabled={!!!session}
+                    id="comment"
+                    aria-describedby=""
+                    disabled={!!!session || isLoading}
                     placeholder="Add a comment..."
                     className="resize-none"
                     {...field}
@@ -101,10 +115,21 @@ const InputForm: FC<InputFormProps> = ({ session }) => {
               <></>
             )}
             <Button
-              disabled={!!!session}
+              disabled={!!!session || isLoading}
               type="submit"
-              className="px-6 py-3 ml-auto uppercase bg-moderate-blue">
+              className={cn(
+                "px-6 py-3 ml-auto uppercase bg-moderate-blue hover:bg-light-grayish-blue",
+                {
+                  "pl-4 pr-2": isLoading,
+                }
+              )}>
               Send
+              {isLoading && (
+                <span
+                  className="ml-2 h-5 w-5 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                  role="status"
+                />
+              )}
             </Button>
           </div>
         </form>

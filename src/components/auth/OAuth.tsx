@@ -18,20 +18,21 @@ const OAuth: FC<OAuthProps> = ({ isLoading, setIsLoading }) => {
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
     }
   };
 
   return (
     <Button disabled={!!isLoading} className="w-full" onClick={handleClick}>
-      <Icons.google className="w-4 h-4 mr-2" />
-      Google
-      {isLoading === "google" && (
-        <span
-          className="ml-3 h-5 w-5 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
-          role="status"
-        />
-      )}
+      <span className="relative flex items-center justify-center">
+        <Icons.google className="w-4 h-4 mr-2" />
+        Google
+        {isLoading === "google" && (
+          <span
+            className="absolute -right-6 h-5 w-5 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+            role="status"
+          />
+        )}
+      </span>
     </Button>
   );
 };
