@@ -14,8 +14,8 @@ const Comments: FC<CommentsProps> = ({ children, depth }) => {
           "border-l-2 border-light-gray": depth > 0,
         })}
         style={{
-          marginLeft: `${depth * 20}px`,
-          paddingLeft: `${depth * 20}px`,
+          marginLeft: `${depth * 30}px`,
+          paddingLeft: `${depth * 30}px`,
         }}>
         {children}
       </div>
