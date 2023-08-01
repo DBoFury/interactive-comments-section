@@ -29,14 +29,24 @@ const Logout = () => {
   return (
     <>
       {isLoading ? (
-        <div className="inline-flex items-center justify-center p-2">
-          <span
-            className="h-7 w-7 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
-            role="status"
-          />
-        </div>
+        <>
+          <div className="inline-flex items-center justify-center p-2 sm:hidden">
+            <span
+              className="h-7 w-7 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+              role="status"
+            />
+          </div>
+          <Button disabled={isLoading} variant="outline">
+            <p className="hidden pr-2 text-lg sm:inline">Logout</p>
+            <span
+              className="ml-2 h-5 w-5 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+              role="status"
+            />
+          </Button>
+        </>
       ) : (
         <Button variant="outline" onClick={handleLogout}>
+          <p className="hidden pr-2 text-lg sm:inline">Logout</p>
           <Icons.logout className="w-4 h-4" />
         </Button>
       )}

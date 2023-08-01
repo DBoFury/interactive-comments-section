@@ -14,6 +14,7 @@ module.exports = {
       },
     },
     extend: {
+      screens: { dt: "1440px" },
       colors: {
         "moderate-blue": "hsl(238, 40%, 52%)",
         "soft-red": "hsl(358, 79%, 66%)",

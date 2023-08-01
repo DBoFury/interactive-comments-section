@@ -16,11 +16,13 @@ import { cn } from "@/lib/utils";
 
 interface CommentActionsProps {
   commentId: string;
+  isEdited: boolean;
   setOpenedEdit: (value: string) => void;
 }
 
 const CommentActions: FC<CommentActionsProps> = ({
   commentId,
+  isEdited,
   setOpenedEdit,
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -55,6 +57,7 @@ const CommentActions: FC<CommentActionsProps> = ({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button
+            aria-controls="open delete dialog"
             variant="ghost"
             className="flex items-center justify-center px-1 space-x-1 group text-soft-red hover:bg-transparent">
             <Icons.delete className="fill-soft-red group-hover:fill-pale-red" />
@@ -75,12 +78,14 @@ const CommentActions: FC<CommentActionsProps> = ({
           </DialogHeader>
           <DialogFooter className="flex-row justify-between">
             <Button
+              aria-controls="cancel delete"
               disabled={isLoading}
               onClick={() => setOpen(false)}
               className="px-6 uppercase bg-grayish-blue hover:bg-gray-400">
               No, cancel
             </Button>
             <Button
+              aria-controls="delete"
               disabled={isLoading}
               onClick={handleDeleteClick}
               className={cn("px-6 uppercase bg-soft-red hover:bg-pale-red", {
@@ -99,6 +104,8 @@ const CommentActions: FC<CommentActionsProps> = ({
       </Dialog>
 
       <Button
+        aria-controls="edit"
+        disabled={isEdited}
         onClick={handleEditClick}
         variant="ghost"
         className="flex items-center justify-center px-1 space-x-1 group text-moderate-blue hover:bg-transparent">

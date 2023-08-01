@@ -103,6 +103,10 @@ const UpdateForm: FC<UpdateFormProps> = ({
       }
     }
 
+    if (form.formState.errors && form.formState.isSubmitted) {
+      form.trigger("text");
+    }
+
     form.setValue("text", value);
   };
 

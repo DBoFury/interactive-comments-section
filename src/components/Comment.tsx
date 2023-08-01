@@ -78,6 +78,7 @@ const Comment: FC<CommentProps> = ({
                   </Button>
                 ) : session?.user.email === author.email ? (
                   <CommentActions
+                    isEdited={openedEdit}
                     commentId={comment.id}
                     setOpenedEdit={setOpenedEdit}
                   />
@@ -131,6 +132,7 @@ const Comment: FC<CommentProps> = ({
                     </Button>
                   ) : session?.user.email === author.email ? (
                     <CommentActions
+                      isEdited={openedEdit}
                       commentId={comment.id}
                       setOpenedEdit={setOpenedEdit}
                     />

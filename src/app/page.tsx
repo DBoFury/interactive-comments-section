@@ -12,7 +12,7 @@ const page = async () => {
   return (
     <main className="flex flex-col items-center justify-between w-full min-h-screen bg-very-light-gray">
       <Header session={session} />
-      <section className="flex flex-col justify-end flex-grow space-y-4 w-full max-w-[46rem] p-4">
+      <section className="flex flex-col justify-end flex-grow space-y-4 w-full max-w-[52rem] p-4">
         <CommentsSection session={session} comments={comments} />
         <InputForm session={session} />
       </section>

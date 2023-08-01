@@ -7,6 +7,10 @@ export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
 };
 
+export const capitalize = (str: string) => {
+  return str.replace(/\b\w/g, (match) => match.toUpperCase());
+};
+
 export const getFallback = (user: Session["user"]) => {
   if (user.name) {
     return user.name

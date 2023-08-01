@@ -83,13 +83,17 @@ const ReplyForm: FC<ReplyFormProps> = ({
     const value = e.target.value;
     const prefix = usernameReply(repliesTo);
 
-    if (value === "") {
+    if (value === "" || value.length < prefix.length) {
       form.setValue("text", prefix);
       return;
     }
 
     if (!value.startsWith(prefix)) {
       return;
+    }
+
+    if (form.formState.errors && form.formState.isSubmitted) {
+      form.trigger("text");
     }
 
     form.setValue("text", value);

@@ -72,7 +72,7 @@ const CommentsSection: FC<CommentSectionProps> = ({ comments, session }) => {
 
   return (
     <ScrollArea className="flex-grow h-0">
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col py-2 pl-1 pr-4 space-y-4">
         {getCommentsElements(
           session,
           comments,
