@@ -40,8 +40,8 @@ Users should be able to:
 
 ### Links
 
-- Solution URL: [GitHub repository]()
-- Live Site URL: [Live site URL]()
+- Solution URL: [GitHub repository](https://github.com/DBoFury/interactive-comments-section/)
+- Live Site URL: [Live site URL](https://interactive-comments-section-mocha.vercel.app/)
 
 ## My process
 
