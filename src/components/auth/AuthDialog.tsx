@@ -26,9 +26,7 @@ const AuthDialog: FC<AuthDialogProps> = ({
   setIsLoading,
 }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const [isSignUp, setIsSignUp] = useState<boolean>(
-    buttonType === "sign up" ? true : false
-  );
+  const [isSignUp, setIsSignUp] = useState<boolean>(buttonType === "sign up");
 
   const handleAuthToggle = () => {
     setIsSignUp((prev) => !prev);
