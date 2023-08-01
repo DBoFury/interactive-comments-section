@@ -13,6 +13,10 @@ const updateReqSchema = z.object({
   content: z.string().min(10).max(300),
 });
 
+const deleteReqSchema = z.object({
+  commentId: z.string(),
+});
+
 export const POST = async (req: NextRequest) => {
   try {
     const user = await getServerSession(authOptions).then(
@@ -108,7 +112,67 @@ export const PUT = async (req: NextRequest) => {
 
     return NextResponse.json(
       { id: updatedComment.id, message: "Updated." },
-      { status: 201 }
+      { status: 200 }
+    );
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
+    }
+    if (error instanceof Error) {
+      return NextResponse.json({ message: error.message }, { status: 400 });
+    }
+    return NextResponse.json(
+      { message: "Something went wrong. Try again later." },
+      { status: 400 }
+    );
+  }
+};
+
+export const DELETE = async (req: NextRequest) => {
+  try {
+    const user = await getServerSession(authOptions).then(
+      (session) => session?.user
+    );
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          error: "Unauthorized to perform this action.",
+        },
+        { status: 401 }
+      );
+    }
+
+    const { commentId } = deleteReqSchema.parse(await req.json());
+
+    const userDB = await prisma.user.findFirst({
+      where: {
+        email: user.email,
+      },
+    });
+
+    const comment = await prisma.comment.findFirst({
+      where: {
+        id: commentId,
+      },
+    });
+
+    if (comment?.authorId !== userDB?.id) {
+      return NextResponse.json(
+        { error: "You can edit only your comments." },
+        { status: 403 }
+      );
+    }
+
+    const updatedComment = await prisma.comment.delete({
+      where: {
+        id: commentId,
+      },
+    });
+
+    return NextResponse.json(
+      { id: updatedComment.id, message: "Deleted." },
+      { status: 200 }
     );
   } catch (error) {
     if (error instanceof ZodError) {

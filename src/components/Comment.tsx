@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { getFallback } from "@/lib/utils";
 import CommentActions from "./CommentActions";
 import UpdateForm from "./UpdateForm";
+import { usernameReply } from "@/helpers/comment";
 
 interface CommentProps {
   comment: CommentType;
@@ -76,7 +77,9 @@ const Comment: FC<CommentProps> = ({
               <div className="flex flex-col space-y-5">
                 <p className="text-grayish-blue">
                   {repliesTo && (
-                    <span className="font-medium text-moderate-blue">{`@${repliesTo} `}</span>
+                    <span className="font-medium text-moderate-blue">
+                      {usernameReply(repliesTo)}
+                    </span>
                   )}
                   {comment.content}
                 </p>

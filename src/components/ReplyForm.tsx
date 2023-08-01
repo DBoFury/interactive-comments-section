@@ -15,17 +15,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
-
-const ReplySchema = z.object({
-  text: z
-    .string()
-    .min(10, {
-      message: "Your reply should contain at least 10 symbols",
-    })
-    .max(300, {
-      message: "Reply is too long, try to contain the 300 symbols width",
-    }),
-});
+import { usernameReply } from "@/helpers/comment";
 
 interface ReplyFormProps {
   commentId: string;
@@ -40,12 +30,23 @@ const ReplyForm: FC<ReplyFormProps> = ({
   user,
   setOpenedReply,
 }) => {
+  const ReplySchema = z.object({
+    text: z
+      .string()
+      .min(10 + usernameReply(repliesTo).length, {
+        message: "Your reply should contain at least 10 symbols",
+      })
+      .max(300 + usernameReply(repliesTo).length, {
+        message: "Reply is too long, try to contain the 300 symbols width",
+      }),
+  });
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof ReplySchema>>({
     resolver: zodResolver(ReplySchema),
     defaultValues: {
-      text: `@${repliesTo} `,
+      text: usernameReply(repliesTo),
     },
   });
 
@@ -58,7 +59,10 @@ const ReplyForm: FC<ReplyFormProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ commentId, content: data.text }),
+        body: JSON.stringify({
+          commentId,
+          content: data.text.replace(usernameReply(repliesTo), ""),
+        }),
       });
 
       setOpenedReply(null);
@@ -77,7 +81,7 @@ const ReplyForm: FC<ReplyFormProps> = ({
 
   const handleReplyChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
-    const prefix = `@${repliesTo} `;
+    const prefix = usernameReply(repliesTo);
 
     if (value === "") {
       form.setValue("text", prefix);

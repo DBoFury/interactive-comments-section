@@ -13,17 +13,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
-
-const UpdateSchema = z.object({
-  text: z
-    .string()
-    .min(10, {
-      message: "Your reply should contain at least 10 symbols",
-    })
-    .max(300, {
-      message: "Reply is too long, try to contain the 300 symbols width",
-    }),
-});
+import { usernameReply } from "@/helpers/comment";
 
 interface UpdateFormProps {
   commentId: string;
@@ -40,6 +30,17 @@ const UpdateForm: FC<UpdateFormProps> = ({
   setOpenedEdit,
   scoreElement,
 }) => {
+  const UpdateSchema = z.object({
+    text: z
+      .string()
+      .min(10 + usernameReply(repliesTo).length, {
+        message: "Your reply should contain at least 10 symbols",
+      })
+      .max(300 + usernameReply(repliesTo).length, {
+        message: "Reply is too long, try to contain the 300 symbols width",
+      }),
+  });
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof UpdateSchema>>({
@@ -67,7 +68,7 @@ const UpdateForm: FC<UpdateFormProps> = ({
         body: JSON.stringify({
           commentId,
           content: repliesTo
-            ? data.text.replace(`@${repliesTo} `, "")
+            ? data.text.replace(usernameReply(repliesTo), "")
             : data.text,
         }),
       });
@@ -90,7 +91,7 @@ const UpdateForm: FC<UpdateFormProps> = ({
     const value = e.target.value;
 
     if (repliesTo) {
-      const prefix = `@${repliesTo} `;
+      const prefix = usernameReply(repliesTo);
 
       if (value === "") {
         form.setValue("text", prefix);
