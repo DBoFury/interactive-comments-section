@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { toast } from "../ui/use-toast";
+import { useRouter } from "next/navigation";
 
 export const SignUpSchema = z.object({
   email: z
@@ -47,6 +48,8 @@ const SignIn: FC<SignInProps> = ({
   setIsLoading,
   handleAuthToggle,
 }) => {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof SignUpSchema>>({
     resolver: zodResolver(SignUpSchema),
     defaultValues: {
@@ -70,6 +73,8 @@ const SignIn: FC<SignInProps> = ({
       if (status?.error) {
         throw new Error("Invalid password or email.");
       }
+
+      router.refresh();
     } catch (error: any) {
       toast({
         variant: "destructive",

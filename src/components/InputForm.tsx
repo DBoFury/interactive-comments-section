@@ -80,29 +80,59 @@ const InputForm: FC<InputFormProps> = ({ session }) => {
   };
 
   return (
-    <div className="w-full p-4 bg-white rounded-lg shadow-sm left-1/2">
+    <div className="w-full p-4 bg-white rounded-lg shadow-sm left-1/2 sm:p-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="text"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Textarea
-                    id="comment"
-                    aria-describedby=""
-                    disabled={!!!session || isLoading}
-                    placeholder="Add a comment..."
-                    className="resize-none"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+          <div className="flex w-full space-x-4">
+            {!!session ? (
+              <Avatar className="hidden sm:inline">
+                <AvatarImage
+                  src={session.user.image ?? ""}
+                  alt={`@${session.user.username}`}
+                />
+                <AvatarFallback>{getFallback(session.user)}</AvatarFallback>
+              </Avatar>
+            ) : (
+              <></>
             )}
-          />
-          <div className="flex items-center justify-between pl-1">
+            <FormField
+              control={form.control}
+              name="text"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormControl>
+                    <Textarea
+                      id="comment"
+                      aria-describedby=""
+                      disabled={!!!session || isLoading}
+                      placeholder="Add a comment..."
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              disabled={!!!session || isLoading}
+              type="submit"
+              className={cn(
+                "hidden sm:inline px-6 py-3 ml-auto uppercase bg-moderate-blue hover:bg-light-grayish-blue",
+                {
+                  "pl-4 pr-2": isLoading,
+                }
+              )}>
+              Send
+              {isLoading && (
+                <span
+                  className="ml-2 h-5 w-5 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+                  role="status"
+                />
+              )}
+            </Button>
+          </div>
+          <div className="flex items-center justify-between pl-1 sm:hidden">
             {!!session ? (
               <Avatar>
                 <AvatarImage
