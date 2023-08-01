@@ -12,6 +12,8 @@ const getCommentsElements = (
   comments: CommentType[],
   openedReply: string | null,
   setOpenedReply: (value: string | null) => void,
+  openedEdit: string | null,
+  setOpenedEdit: (value: string | null) => void,
   repliesTo: string | null = null,
   depth = 0
 ): ReactNode[] => {
@@ -26,6 +28,8 @@ const getCommentsElements = (
             repliesTo={repliesTo}
             openedReply={comment.id === openedReply}
             setOpenedReply={setOpenedReply}
+            openedEdit={comment.id === openedEdit}
+            setOpenedEdit={setOpenedEdit}
           />
           <Comments depth={depth + 1}>
             {getCommentsElements(
@@ -33,6 +37,8 @@ const getCommentsElements = (
               comment.replies,
               openedReply,
               setOpenedReply,
+              openedEdit,
+              setOpenedEdit,
               (repliesTo = comment.author.username)
             )}
           </Comments>
@@ -47,6 +53,8 @@ const getCommentsElements = (
           repliesTo={repliesTo}
           openedReply={comment.id === openedReply}
           setOpenedReply={setOpenedReply}
+          openedEdit={comment.id === openedEdit}
+          setOpenedEdit={setOpenedEdit}
         />
       );
     }
@@ -60,11 +68,19 @@ interface CommentSectionProps {
 
 const CommentsSection: FC<CommentSectionProps> = ({ comments, session }) => {
   const [openedReply, setOpenedReply] = useState<string | null>(null);
+  const [openedEdit, setOpenedEdit] = useState<string | null>(null);
 
   return (
     <ScrollArea className="flex-grow h-0">
       <div className="flex flex-col space-y-4">
-        {getCommentsElements(session, comments, openedReply, setOpenedReply)}
+        {getCommentsElements(
+          session,
+          comments,
+          openedReply,
+          setOpenedReply,
+          openedEdit,
+          setOpenedEdit
+        )}
       </div>
     </ScrollArea>
   );

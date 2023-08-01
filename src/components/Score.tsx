@@ -65,6 +65,7 @@ const Score: FC<ScoreProps> = ({ commentId, score, sessionUser }) => {
     <div className="rounded-lg bg-light-gray">
       <div className="flex items-center justify-center space-x-1">
         <Button
+          type="button"
           disabled={!!!user}
           onClick={() => handleScoreButton(true)}
           variant="ghost"
@@ -81,6 +82,7 @@ const Score: FC<ScoreProps> = ({ commentId, score, sessionUser }) => {
           {totalScore}
         </span>
         <Button
+          type="button"
           disabled={!!!user}
           onClick={() => handleScoreButton(false)}
           variant="ghost"
