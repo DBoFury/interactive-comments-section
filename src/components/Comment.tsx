@@ -63,6 +63,7 @@ const Comment: FC<CommentProps> = ({
             {openedEdit ? (
               <UpdateForm
                 commentId={comment.id}
+                repliesTo={repliesTo}
                 content={comment.content}
                 setOpenedEdit={setOpenedEdit}
                 scoreElement={scoreElement}
@@ -113,7 +114,7 @@ const Comment: FC<CommentProps> = ({
       {openedReply && (
         <ReplyForm
           commentId={comment.id}
-          replyingTo={comment.author.username}
+          repliesTo={comment.author.username}
           user={session?.user || null}
           setOpenedReply={setOpenedReply}
         />

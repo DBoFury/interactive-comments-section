@@ -1,6 +1,5 @@
-import { FC, ReactNode, useState } from "react";
-import type { Session } from "next-auth";
-import { cn, getFallback } from "@/lib/utils";
+import { ChangeEvent, FC, ReactNode, useState } from "react";
+import { cn } from "@/lib/utils";
 import {
   Form,
   FormControl,
@@ -8,7 +7,6 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { z } from "zod";
@@ -29,6 +27,7 @@ const UpdateSchema = z.object({
 
 interface UpdateFormProps {
   commentId: string;
+  repliesTo: string | null;
   content: string;
   setOpenedEdit: (value: null) => void;
   scoreElement: ReactNode;
@@ -36,6 +35,7 @@ interface UpdateFormProps {
 
 const UpdateForm: FC<UpdateFormProps> = ({
   commentId,
+  repliesTo,
   content,
   setOpenedEdit,
   scoreElement,
@@ -45,12 +45,11 @@ const UpdateForm: FC<UpdateFormProps> = ({
   const form = useForm<z.infer<typeof UpdateSchema>>({
     resolver: zodResolver(UpdateSchema),
     defaultValues: {
-      text: content,
+      text: repliesTo ? `@${repliesTo} ${content}` : `${content}`,
     },
   });
 
   const onSubmit = async (data: z.infer<typeof UpdateSchema>) => {
-    form.reset();
     setIsLoading(true);
 
     try {
@@ -76,6 +75,25 @@ const UpdateForm: FC<UpdateFormProps> = ({
     }
   };
 
+  const handleUpdateChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+
+    if (repliesTo) {
+      const prefix = `@${repliesTo} `;
+
+      if (value === "") {
+        form.setValue("text", prefix);
+        return;
+      }
+
+      if (!value.startsWith(prefix)) {
+        return;
+      }
+    }
+
+    form.setValue("text", value);
+  };
+
   return (
     <div className="w-full p-4 bg-white rounded-lg shadow-sm left-1/2">
       <Form {...form}>
@@ -93,6 +111,7 @@ const UpdateForm: FC<UpdateFormProps> = ({
                     placeholder="Update your comment..."
                     className="resize-none"
                     {...field}
+                    onChange={(e) => handleUpdateChange(e)}
                   />
                 </FormControl>
                 <FormMessage />
