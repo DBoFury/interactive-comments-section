@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import type { Session } from "next-auth";
 import { cn, getFallback } from "@/lib/utils";
 import {
@@ -29,22 +29,27 @@ const ReplySchema = z.object({
 
 interface ReplyFormProps {
   commentId: string;
+  replyingTo: string;
   user: Session["user"] | null;
   setOpenedReply: (value: null) => void;
 }
 
-const ReplyForm: FC<ReplyFormProps> = ({ commentId, user, setOpenedReply }) => {
+const ReplyForm: FC<ReplyFormProps> = ({
+  commentId,
+  replyingTo,
+  user,
+  setOpenedReply,
+}) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof ReplySchema>>({
     resolver: zodResolver(ReplySchema),
     defaultValues: {
-      text: "",
+      text: `@${replyingTo} `,
     },
   });
 
   const onSubmit = async (data: z.infer<typeof ReplySchema>) => {
-    form.reset();
     setIsLoading(true);
 
     try {
@@ -70,6 +75,19 @@ const ReplyForm: FC<ReplyFormProps> = ({ commentId, user, setOpenedReply }) => {
     }
   };
 
+  const handleReplyChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    const prefix = `@${replyingTo} `;
+
+    if (!value.startsWith(prefix)) {
+      const splittedBySpace = value.replace(`@${replyingTo}`, "").split(" ");
+      const newValue = prefix + splittedBySpace.slice(-2).join(" ");
+      form.setValue("text", newValue);
+    } else {
+      form.setValue("text", value);
+    }
+  };
+
   return (
     <div className="w-full p-4 bg-white rounded-lg shadow-sm left-1/2">
       <Form {...form}>
@@ -87,6 +105,7 @@ const ReplyForm: FC<ReplyFormProps> = ({ commentId, user, setOpenedReply }) => {
                     placeholder="Your reply..."
                     className="resize-none"
                     {...field}
+                    onChange={(e) => handleReplyChange(e)}
                   />
                 </FormControl>
                 <FormMessage />
