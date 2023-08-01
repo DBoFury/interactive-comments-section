@@ -64,7 +64,11 @@ const Comment: FC<CommentProps> = ({
               <UpdateForm
                 commentId={comment.id}
                 repliesTo={repliesTo}
-                content={comment.content}
+                content={
+                  repliesTo
+                    ? `@${repliesTo} ${comment.content}`
+                    : `${comment.content}`
+                }
                 setOpenedEdit={setOpenedEdit}
                 scoreElement={scoreElement}
               />

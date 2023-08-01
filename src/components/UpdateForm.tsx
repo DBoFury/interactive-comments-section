@@ -45,20 +45,31 @@ const UpdateForm: FC<UpdateFormProps> = ({
   const form = useForm<z.infer<typeof UpdateSchema>>({
     resolver: zodResolver(UpdateSchema),
     defaultValues: {
-      text: repliesTo ? `@${repliesTo} ${content}` : `${content}`,
+      text: content,
     },
   });
 
   const onSubmit = async (data: z.infer<typeof UpdateSchema>) => {
     setIsLoading(true);
 
+    if (data.text === content) {
+      setIsLoading(false);
+      setOpenedEdit(null);
+      return;
+    }
+
     try {
-      const response = await fetch("/api/comments/reply", {
-        method: "POST",
+      const response = await fetch("/api/comments", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ commentId, content: data.text }),
+        body: JSON.stringify({
+          commentId,
+          content: repliesTo
+            ? data.text.replace(`@${repliesTo} `, "")
+            : data.text,
+        }),
       });
 
       setOpenedEdit(null);
@@ -118,7 +129,7 @@ const UpdateForm: FC<UpdateFormProps> = ({
               </FormItem>
             )}
           />
-          <div className="flex items-center justify-between pl-1">
+          <div className="flex items-center justify-between">
             {scoreElement}
             <Button
               disabled={isLoading}
