@@ -17,6 +17,7 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { toast } from "../ui/use-toast";
 
 export const SignUpSchema = z.object({
   email: z
@@ -60,9 +61,21 @@ const SignIn: FC<SignInProps> = ({
     try {
       const { email, password } = data;
 
-      await signIn("credentials", { email, password });
+      const status = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (status?.error) {
+        throw new Error("Invalid password or email.");
+      }
     } catch (error: any) {
-      // TODO: handle errors
+      toast({
+        variant: "destructive",
+        description: <p className="font-rubik">{error.message}</p>,
+        duration: 4000,
+      });
     } finally {
       setIsLoading(false);
     }

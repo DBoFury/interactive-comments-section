@@ -18,12 +18,6 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async signIn({ user, account, profile, email, credentials }) {
-      // console.log(user);
-      // console.log(account);
-      // console.log(profile);
-      // console.log(email);
-      // console.log(credentials);
-
       if (account?.provider === "google") {
         return true;
       }
@@ -87,11 +81,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         try {
-          console.log("Here");
-
           const { email, password } = credentialsSchema.parse(credentials);
-
-          console.log("Here");
 
           const isExists = await prisma.user.findFirst({
             where: {

@@ -83,14 +83,23 @@ const SignUp: FC<SignUpProps> = ({
         }
       }
 
-      const { email, password } = await response.json();
+      const { email } = await response.json();
+      const { password } = data;
 
-      await signIn("credentials", { email, password });
+      const status = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (status?.error) {
+        throw new Error(status.error);
+      }
     } catch (error: any) {
       toast({
         variant: "destructive",
         description: <p className="font-rubik">{error.message}</p>,
-        duration: 2000,
+        duration: 4000,
       });
     } finally {
       setIsLoading(false);
