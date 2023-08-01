@@ -63,7 +63,7 @@ const Score: FC<ScoreProps> = ({ commentId, score, sessionUser }) => {
 
   return (
     <div className="rounded-lg bg-light-gray">
-      <div className="flex items-center justify-center space-x-1">
+      <div className="flex items-center justify-center space-x-1 sm:flex-col sm:space-x-0 sm:space-y-1">
         <Button
           type="button"
           disabled={!!!user}

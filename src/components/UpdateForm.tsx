@@ -107,7 +107,7 @@ const UpdateForm: FC<UpdateFormProps> = ({
   };
 
   return (
-    <div className="w-full p-4 bg-white rounded-lg shadow-sm left-1/2">
+    <div className="w-full py-4 bg-white rounded-lg shadow-sm left-1/2">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -131,7 +131,7 @@ const UpdateForm: FC<UpdateFormProps> = ({
             )}
           />
           <div className="flex items-center justify-between">
-            {scoreElement}
+            <div className="sm:hidden">{scoreElement}</div>
             <Button
               disabled={isLoading}
               className={cn(
