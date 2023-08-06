@@ -36,6 +36,7 @@ Users should be able to:
    ![Desktop-Active](./screenshots/Desktop-Active.PNG)
 
 3. Mobile
+
    ![Mobile](./screenshots/Mobile.PNG)
 
 ### Links
